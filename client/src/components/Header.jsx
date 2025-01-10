@@ -117,6 +117,40 @@ export default function Header() {
           <Navbar.Link active={path === "/search?type=sale"} as={'div'}>
             <Link to='/search?type=sale'>Sale</Link>
           </Navbar.Link>
+
+          
+          <Navbar.Link 
+  as={'div'}
+  style={{
+    display: 'inline-block',
+    fontSize: '14px',
+    fontWeight: 'bold', // Bold text
+    textAlign: 'center',
+    color: '#333333', // Dark text color for visibility (dark grey)
+    backgroundColor: '#FFD700', // Gold background
+    borderRadius: '50px', // Oval shape (rounded edges)
+    padding: '2px 12px', // Padding for the oval shape
+    textTransform: 'capitalize',
+    cursor: 'pointer',
+    transition: 'color 0.3s ease-in-out, transform 0.2s ease-in-out, background-color 0.3s ease-in-out', // Smooth transition for background
+  }}
+  onClick={() => window.open('https://github.com/anuvansh99/Banglore_House_Price_Predictor', '_blank')}
+  onMouseEnter={(e) => {
+    e.currentTarget.style.color = '#FFFFFF'; // White text on hover for contrast
+    e.currentTarget.style.backgroundColor = '#FF5722'; // Darker red background on hover
+    e.currentTarget.style.transform = 'scale(1.05)'; // Slight zoom on hover
+  }}
+  onMouseLeave={(e) => {
+    e.currentTarget.style.color = '#333333'; // Dark text on hover revert
+    e.currentTarget.style.backgroundColor = '#FFD700'; // Revert to gold background
+    e.currentTarget.style.transform = 'scale(1)'; // Reset zoom
+  }}
+>
+  <span style={{ color: 'inherit', textDecoration: 'none' }}>
+    Bangalore House Price Predictor
+  </span>
+</Navbar.Link>
+
       </Navbar.Collapse>
       
     </Navbar>
