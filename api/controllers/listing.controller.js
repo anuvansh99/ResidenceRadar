@@ -4,11 +4,20 @@ import { errorHandler } from "../utils/error.js";
 export const createListing = async (req, res, next) => {
     try {
         const listing = await Listing.create(req.body);
-        return res.status(201).json(listing);
+        return res.status(201).json({
+            success: true,
+            _id: listing._id,
+            listing, // optionally include the full listing object
+        });
     } catch (error) {
-        next(error);
+        // Optionally: send a consistent error structure
+        res.status(400).json({
+            success: false,
+            message: error.message || "Failed to create listing"
+        });
     }
 };
+
 
 export const deleteListing = async (req, res, next) => {
     const listing = await Listing.findById(req.params.id);
