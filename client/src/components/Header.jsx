@@ -134,7 +134,7 @@ export default function Header() {
     cursor: 'pointer',
     transition: 'color 0.3s ease-in-out, transform 0.2s ease-in-out, background-color 0.3s ease-in-out', // Smooth transition for background
   }}
-  onClick={() => window.open('https://github.com/anuvansh99/Banglore_House_Price_Predictor', '_blank')}
+  onClick={() => window.open('https://anuvansh99.github.io/House_price_predictor_frontend/', '_blank')}
   onMouseEnter={(e) => {
     e.currentTarget.style.color = '#FFFFFF'; // White text on hover for contrast
     e.currentTarget.style.backgroundColor = '#FF5722'; // Darker red background on hover
