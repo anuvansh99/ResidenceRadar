@@ -57,10 +57,9 @@ export default function Home() {
           right here
         </h1>
         <div className='text-gray-400 text-sm sm:text-sm'>
-        ResidenceRadar is the place you were looking for to 
-          find your next place to live.
+        ResidenceRadar simplifies home-hunting with personalized recommendations, detailed listings, and user-friendly tools
           <br />
-          We have any kind of place you dreamed of.
+          to find your dream home effortlessly. Start your journey to the perfect home today!
         </div>
         <Link to={'/search'} className='text-xs sm:text-sm text-blue-800 dark:text-blue-600
         font-bold hover:underline'>
