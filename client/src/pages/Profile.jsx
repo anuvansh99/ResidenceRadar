@@ -17,6 +17,7 @@ export default function Profile() {
   const [showListingsError, setShowListingsError] = useState(false);
   const [userListings, setUserListings] = useState([]);
   const dispatch = useDispatch();
+
   useEffect(() => {
     if(file) {
       handleFileUpload(file);
@@ -29,20 +30,20 @@ export default function Profile() {
     const storageRef = ref(storage, fileName);
     const uploadTask = uploadBytesResumable(storageRef, file);
     uploadTask.on('state_changed',
-    (snapshot) => {
-      const progress = (snapshot.bytesTransferred /
-      snapshot.totalBytes) * 100;
-      setFilePerc(Math.round(progress));
-    },
-    (error) => {
-      setFileUploadError(true);
-    },
-    () => {
-      getDownloadURL(uploadTask.snapshot.ref).then
-      ((downloadURL) =>
-        setFormData({ ...formData, avatar: downloadURL })
-      );
-    }
+      (snapshot) => {
+        const progress = (snapshot.bytesTransferred /
+        snapshot.totalBytes) * 100;
+        setFilePerc(Math.round(progress));
+      },
+      (error) => {
+        setFileUploadError(true);
+      },
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref).then
+        ((downloadURL) =>
+          setFormData({ ...formData, avatar: downloadURL })
+        );
+      }
     );
   };
 
@@ -60,7 +61,7 @@ export default function Profile() {
         headers: {
           'Content-Type': 'application/json',
         }, 
-        credentials: 'include',
+        credentials: 'include', // <-- Ensures cookies are sent
         body: JSON.stringify(formData),
       });
       const data =  await res.json();
@@ -79,7 +80,10 @@ export default function Profile() {
     try {
       dispatch(deleteUserStart());
       const res = await fetch(`/api/user/delete/${currentUser._id}`,
-        {method: 'DELETE',});
+        {
+          method: 'DELETE',
+          credentials: 'include', // <-- Ensures cookies are sent
+        });
       const data = await res.json();
       if (data.success === false) {
         dispatch(deleteUserFailure(data.message));
@@ -94,7 +98,9 @@ export default function Profile() {
   const handleSignOut = async () => {
     try {
       dispatch(signOutUserStart());
-      const res = await fetch('/api/auth/signout');
+      const res = await fetch('/api/auth/signout', {
+        credentials: 'include', // <-- Ensures cookies are sent
+      });
       const data = await res.json();
       if (data.success === false) {
         dispatch(signOutUserFailure(data.message));
@@ -102,21 +108,22 @@ export default function Profile() {
       }
       dispatch(signOutUserSuccess(data));
     } catch (error) {
-
+      dispatch(signOutUserFailure(error.message));
     }
   }
 
   const handleShowListings =  async () => {
     try {
       setShowListingsError(false);
-      const res = await fetch(`/api/user/listings/${currentUser._id}`);
+      const res = await fetch(`/api/user/listings/${currentUser._id}`, {
+        credentials: 'include', // <-- Ensures cookies are sent
+      });
       const data = await res.json();
       if (data.success === false) {
         setShowListingsError(true);
         return;
       }
       setUserListings(data);
-      console.log(userListings);
     } catch (error) {
       setShowListingsError(true);
     }
@@ -126,6 +133,7 @@ export default function Profile() {
     try {
       const res = await fetch(`/api/listing/delete/${listingId}`, {
         method: 'DELETE',
+        credentials: 'include', // <-- Ensures cookies are sent
       });
       const data = await res.json();
       if (data.success === false) {
@@ -143,10 +151,10 @@ export default function Profile() {
       <h1 className='text-3xl font-semibold text-center my-7'>Profile</h1>
       <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
         <input onChange={(e) => setfile(e.target.files[0])}
-        type='file' ref={fileRef} hidden accept='image/*' />
+          type='file' ref={fileRef} hidden accept='image/*' />
         <img onClick={() =>fileRef.current.click()} 
-        src={formData.avatar || currentUser.avatar} alt='profile img'
-        className='rounded-full h-24 w-24 object-cover cursor-pointer self-center mt-2'/>
+          src={formData.avatar || currentUser.avatar} alt='profile img'
+          className='rounded-full h-24 w-24 object-cover cursor-pointer self-center mt-2'/>
         <p className='text-sm self-center'>
           {fileUploadError ? (
             <span className='text-red-700 dark:text-red-400'>Error uploading the image</span>
@@ -159,17 +167,17 @@ export default function Profile() {
           )}
         </p>
         <input type='text' placeholder='Username' id='username'
-        defaultValue={currentUser.username} className='border p-3 rounded-lg dark:bg-slate-800' onChange={handleChange}/>
+          defaultValue={currentUser.username} className='border p-3 rounded-lg dark:bg-slate-800' onChange={handleChange}/>
         <input type='email' placeholder='Email' id='email'
-        defaultValue={currentUser.email} className='border p-3 rounded-lg dark:bg-slate-800' onChange={handleChange}/>
+          defaultValue={currentUser.email} className='border p-3 rounded-lg dark:bg-slate-800' onChange={handleChange}/>
         <input type='password' placeholder='Password' id='password'
-        className='border p-3 rounded-lg dark:bg-slate-800' onChange={handleChange}/>
+          className='border p-3 rounded-lg dark:bg-slate-800' onChange={handleChange}/>
         <button disabled={loading} className='bg-slate-700 text-white 
-        rounded-lg p-3 uppercase hover:opacity-95 disabled:opacity-80'>
+          rounded-lg p-3 uppercase hover:opacity-95 disabled:opacity-80'>
           {loading ? 'Loading...' : 'Update'}
         </button>
         <Link to={'/create-listing'} className='bg-green-700 text-white p-3 rounded-lg uppercase
-        text-center hover:opacity-95'>
+          text-center hover:opacity-95'>
           Create Listing
         </Link>
       </form>
@@ -190,10 +198,10 @@ export default function Profile() {
           <div key={listing._id} className='border rounded-lg p-3 flex justify-between items-center gap-4 dark:bg-slate-800'> 
             <Link to={`/listing/${listing._id}`}>
               <img src={listing.imageUrls[0]} alt='listing cover' 
-              className='h-16 w-16 object-contain'/>
+                className='h-16 w-16 object-contain'/>
             </Link>
             <Link className='text-slate-700 font-semibold flex-1 hover:underline truncate'
-            to={`/listing/${listing._id}`}>
+              to={`/listing/${listing._id}`}>
               <p className='dark:text-white'>{listing.name}</p>
             </Link>
             <div className='flex flex-col item-center'>
