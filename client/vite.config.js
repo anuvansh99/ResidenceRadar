@@ -6,7 +6,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'https://residenceradar.onrender.com/',
+        target: 'https://residenceradar-mh1u.onrender.com/',
         secure: false,
       },
     },
