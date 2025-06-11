@@ -35,7 +35,35 @@ app.use(cors({
 }));
 
 // --- SECURITY MIDDLEWARE ---
-app.use(helmet());
+// --- SECURITY MIDDLEWARE ---
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        connectSrc: [
+          "'self'",
+          "https://firebasestorage.googleapis.com",
+          "https://*.firebaseio.com",
+          "https://*.googleapis.com"
+        ],
+        imgSrc: [
+          "'self'",
+          "data:",
+          "https://firebasestorage.googleapis.com",
+          "https://*.firebaseio.com"
+        ],
+        scriptSrc: [
+          "'self'",
+          "https://apis.google.com",
+          "https://*.googleapis.com"
+        ],
+        // Add other directives as needed
+      },
+    },
+  })
+);
+
 
 // --- JSON & COOKIE MIDDLEWARE ---
 app.use(express.json());
