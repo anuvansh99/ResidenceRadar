@@ -45,24 +45,42 @@ app.use(
           "'self'",
           "https://firebasestorage.googleapis.com",
           "https://*.firebaseio.com",
-          "https://*.googleapis.com"
+          "https://*.googleapis.com",
+          "https://accounts.google.com",
+          "https://apis.google.com"
         ],
         imgSrc: [
           "'self'",
           "data:",
           "https://firebasestorage.googleapis.com",
-          "https://*.firebaseio.com"
+          "https://*.firebaseio.com",
+          "https://*.googleusercontent.com"
         ],
         scriptSrc: [
           "'self'",
           "https://apis.google.com",
+          "https://accounts.google.com",
           "https://*.googleapis.com"
+        ],
+        frameSrc: [
+          "'self'",
+          "https://accounts.google.com"
+        ],
+        styleSrc: [
+          "'self'",
+          "'unsafe-inline'",
+          "https://fonts.googleapis.com"
+        ],
+        fontSrc: [
+          "'self'",
+          "https://fonts.gstatic.com"
         ],
         // Add other directives as needed
       },
     },
   })
 );
+
 
 
 // --- JSON & COOKIE MIDDLEWARE ---
