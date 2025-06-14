@@ -12,11 +12,13 @@ export default function Header() {
   const { currentUser } = useSelector(state => state.user);
   const { theme } = useSelector(state => state.theme);
   const [searchTerm, setSearchTerm] = useState('');
+  const [showMobileSearch, setShowMobileSearch] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setShowMobileSearch(false);
     const urlParams = new URLSearchParams(window.location.search);
     urlParams.set('searchTerm', searchTerm);
     const searchQuery = urlParams.toString();
@@ -31,6 +33,7 @@ export default function Header() {
     }
   }, [location.search]);
 
+  // Optional: handle sign out
   const handleSignOut = async () => {
     try {
       const res = await fetch('/api/auth/signout');
@@ -50,44 +53,83 @@ export default function Header() {
         </h1>
       </Link>
 
-      {/* Search Input for Large Screens */}
-      <form onSubmit={handleSubmit} className="hidden lg:block flex-1 mx-4">
+      {/* Desktop Search Bar */}
+      <form
+        onSubmit={handleSubmit}
+        className="hidden lg:flex flex-1 justify-center"
+      >
         <TextInput
           type="text"
           placeholder="Search..."
           value={searchTerm}
           rightIcon={FaSearch}
           onChange={(e) => setSearchTerm(e.target.value)}
+          className="max-w-md w-full"
         />
       </form>
 
-      <div className="flex items-center gap-2 md:order-2">
-        {/* Search Button for Mobile */}
+      {/* Right section */}
+      <div className="flex items-center gap-3 md:order-2">
+        {/* Mobile Search Toggle */}
         <Button
           className="w-10 h-10 p-0 lg:hidden"
           color="gray"
           pill
-          onClick={() => {
-            // Optionally, you can implement a mobile search modal here
-            // For now, just focus the search input (if present)
-            const searchInput = document.getElementById('mobile-search-input');
-            if (searchInput) searchInput.focus();
-          }}
+          onClick={() => setShowMobileSearch((prev) => !prev)}
+          aria-label="Show search"
         >
           <AiOutlineSearch />
         </Button>
 
-        {/* Theme Toggle Button - always visible */}
-        <Button
-          className="w-10 h-10 p-0 inline-flex items-center justify-center"
-          color="gray"
-          pill
-          onClick={() => dispatch(toggleTheme())}
-          title="Toggle Theme"
-          aria-label="Toggle Theme"
-        >
-          {theme === 'light' ? <FaSun /> : <FaMoon />}
-        </Button>
+        {/* Spacing between predictor and theme toggle */}
+        <div className="flex items-center gap-3">
+          {/* Bangalore House Price Predictor Button */}
+          <Navbar.Link
+            as={'div'}
+            className="hidden lg:inline-block"
+            style={{
+              display: 'inline-block',
+              fontSize: '14px',
+              fontWeight: 'bold',
+              textAlign: 'center',
+              color: '#333333',
+              backgroundColor: '#FFD700',
+              borderRadius: '50px',
+              padding: '2px 12px',
+              textTransform: 'capitalize',
+              cursor: 'pointer',
+              transition: 'color 0.3s ease-in-out, transform 0.2s ease-in-out, background-color 0.3s ease-in-out',
+              marginRight: '0.5rem', // extra spacing
+            }}
+            onClick={() => window.open('https://banglore-house-price-predictor.onrender.com/', '_blank')}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = '#FFFFFF';
+              e.currentTarget.style.backgroundColor = '#FF5722';
+              e.currentTarget.style.transform = 'scale(1.05)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = '#333333';
+              e.currentTarget.style.backgroundColor = '#FFD700';
+              e.currentTarget.style.transform = 'scale(1)';
+            }}
+          >
+            <span style={{ color: 'inherit', textDecoration: 'none' }}>
+              Bangalore House Price Predictor
+            </span>
+          </Navbar.Link>
+
+          {/* Theme Toggle Button */}
+          <Button
+            className="w-10 h-10 p-0 inline-flex items-center justify-center"
+            color="gray"
+            pill
+            onClick={() => dispatch(toggleTheme())}
+            title="Toggle Theme"
+            aria-label="Toggle Theme"
+          >
+            {theme === 'light' ? <FaSun /> : <FaMoon />}
+          </Button>
+        </div>
 
         {/* User Dropdown or Sign In */}
         {currentUser ? (
@@ -118,35 +160,31 @@ export default function Header() {
         <Navbar.Toggle />
       </div>
 
-      {/* Responsive Search Input for Mobile (visible in collapse) */}
+      {/* Mobile Search Bar Overlay/Dropdown */}
+      {showMobileSearch && (
+        <div className="absolute top-16 left-0 w-full px-4 py-2 bg-white dark:bg-gray-800 z-50 flex lg:hidden border-b">
+          <form onSubmit={handleSubmit} className="flex w-full gap-2">
+            <TextInput
+              type="text"
+              placeholder="Search..."
+              value={searchTerm}
+              rightIcon={FaSearch}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full"
+              autoFocus
+            />
+            <Button type="submit" color="gray" pill>
+              <FaSearch />
+            </Button>
+          </form>
+        </div>
+      )}
+
       <Navbar.Collapse>
-        <form onSubmit={handleSubmit} className="block lg:hidden mb-2">
-          <TextInput
-            id="mobile-search-input"
-            type="text"
-            placeholder="Search..."
-            value={searchTerm}
-            rightIcon={FaSearch}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </form>
-        <Navbar.Link active={path === "/"} as={'div'}>
-          <Link to="/">Home</Link>
-        </Navbar.Link>
-        <Navbar.Link active={path === "/about"} as={'div'}>
-          <Link to="/about">About</Link>
-        </Navbar.Link>
-        <Navbar.Link active={path === "/search?offer=true"} as={'div'}>
-          <Link to="/search?offer=true">Offer</Link>
-        </Navbar.Link>
-        <Navbar.Link active={path === "/search?type=rent"} as={'div'}>
-          <Link to="/search?type=rent">Rent</Link>
-        </Navbar.Link>
-        <Navbar.Link active={path === "/search?type=sale"} as={'div'}>
-          <Link to="/search?type=sale">Sale</Link>
-        </Navbar.Link>
+        {/* Mobile: Show predictor button in collapse */}
         <Navbar.Link
           as={'div'}
+          className="lg:hidden"
           style={{
             display: 'inline-block',
             fontSize: '14px',
@@ -159,6 +197,7 @@ export default function Header() {
             textTransform: 'capitalize',
             cursor: 'pointer',
             transition: 'color 0.3s ease-in-out, transform 0.2s ease-in-out, background-color 0.3s ease-in-out',
+            marginBottom: '0.5rem',
           }}
           onClick={() => window.open('https://banglore-house-price-predictor.onrender.com/', '_blank')}
           onMouseEnter={(e) => {
@@ -175,6 +214,22 @@ export default function Header() {
           <span style={{ color: 'inherit', textDecoration: 'none' }}>
             Bangalore House Price Predictor
           </span>
+        </Navbar.Link>
+
+        <Navbar.Link active={path === "/"} as={'div'}>
+          <Link to="/">Home</Link>
+        </Navbar.Link>
+        <Navbar.Link active={path === "/about"} as={'div'}>
+          <Link to="/about">About</Link>
+        </Navbar.Link>
+        <Navbar.Link active={path === "/search?offer=true"} as={'div'}>
+          <Link to="/search?offer=true">Offer</Link>
+        </Navbar.Link>
+        <Navbar.Link active={path === "/search?type=rent"} as={'div'}>
+          <Link to="/search?type=rent">Rent</Link>
+        </Navbar.Link>
+        <Navbar.Link active={path === "/search?type=sale"} as={'div'}>
+          <Link to="/search?type=sale">Sale</Link>
         </Navbar.Link>
       </Navbar.Collapse>
     </Navbar>
