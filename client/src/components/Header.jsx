@@ -16,17 +16,15 @@ export default function Header() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  // Handle search submit
   const handleSubmit = (e) => {
     e.preventDefault();
-    setShowMobileSearch(false); // Hide mobile search overlay after search
+    setShowMobileSearch(false);
     const urlParams = new URLSearchParams(window.location.search);
     urlParams.set('searchTerm', searchTerm);
     const searchQuery = urlParams.toString();
     navigate(`/search?${searchQuery}`);
   };
 
-  // Keep search term in sync with URL
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
     const searchTermFromUrl = urlParams.get('searchTerm');
@@ -35,7 +33,6 @@ export default function Header() {
     }
   }, [location.search]);
 
-  // Optional: handle sign out
   const handleSignOut = async () => {
     try {
       const res = await fetch('/api/auth/signout');
@@ -84,10 +81,10 @@ export default function Header() {
           <AiOutlineSearch />
         </Button>
 
-        {/* Predictor Button (desktop only) */}
+        {/* Predictor Button (desktop only, with left margin) */}
         <button
           type="button"
-          className="hidden lg:inline-block font-bold text-sm text-[#333] bg-[#FFD700] rounded-full px-4 py-1 transition-all duration-200 hover:bg-[#FF5722] hover:text-white focus:outline-none mr-2"
+          className="hidden lg:inline-block font-bold text-sm text-[#333] bg-[#FFD700] rounded-full px-4 py-1 transition-all duration-200 hover:bg-[#FF5722] hover:text-white focus:outline-none ml-4"
           style={{
             textTransform: 'capitalize',
             letterSpacing: '0.01em',
