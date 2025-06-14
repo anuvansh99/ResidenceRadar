@@ -16,15 +16,17 @@ export default function Header() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  // Handle search submit
   const handleSubmit = (e) => {
     e.preventDefault();
-    setShowMobileSearch(false);
+    setShowMobileSearch(false); // Hide mobile search overlay after search
     const urlParams = new URLSearchParams(window.location.search);
     urlParams.set('searchTerm', searchTerm);
     const searchQuery = urlParams.toString();
     navigate(`/search?${searchQuery}`);
   };
 
+  // Keep search term in sync with URL
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
     const searchTermFromUrl = urlParams.get('searchTerm');
@@ -45,8 +47,9 @@ export default function Header() {
   };
 
   return (
-    <Navbar className="border-b-2 px-2 py-2">
-      <Link to="/">
+    <Navbar className="border-b-2 px-2 py-2 relative z-20">
+      {/* Logo */}
+      <Link to="/" className="flex items-center">
         <h1 className="font-bold text-sm sm:text-xl flex flex-wrap">
           <span className="text-slate-500 dark:text-slate-300">Residence</span>
           <span className="text-slate-700 dark:text-white">Radar</span>
@@ -69,8 +72,8 @@ export default function Header() {
       </form>
 
       {/* Right section */}
-      <div className="flex items-center gap-3 md:order-2">
-        {/* Mobile Search Toggle */}
+      <div className="flex items-center gap-x-4 md:order-2">
+        {/* Mobile Search Icon */}
         <Button
           className="w-10 h-10 p-0 lg:hidden"
           color="gray"
@@ -81,55 +84,30 @@ export default function Header() {
           <AiOutlineSearch />
         </Button>
 
-        {/* Spacing between predictor and theme toggle */}
-        <div className="flex items-center gap-3">
-          {/* Bangalore House Price Predictor Button */}
-          <Navbar.Link
-            as={'div'}
-            className="hidden lg:inline-block"
-            style={{
-              display: 'inline-block',
-              fontSize: '14px',
-              fontWeight: 'bold',
-              textAlign: 'center',
-              color: '#333333',
-              backgroundColor: '#FFD700',
-              borderRadius: '50px',
-              padding: '2px 12px',
-              textTransform: 'capitalize',
-              cursor: 'pointer',
-              transition: 'color 0.3s ease-in-out, transform 0.2s ease-in-out, background-color 0.3s ease-in-out',
-              marginRight: '0.5rem', // extra spacing
-            }}
-            onClick={() => window.open('https://banglore-house-price-predictor.onrender.com/', '_blank')}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.color = '#FFFFFF';
-              e.currentTarget.style.backgroundColor = '#FF5722';
-              e.currentTarget.style.transform = 'scale(1.05)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.color = '#333333';
-              e.currentTarget.style.backgroundColor = '#FFD700';
-              e.currentTarget.style.transform = 'scale(1)';
-            }}
-          >
-            <span style={{ color: 'inherit', textDecoration: 'none' }}>
-              Bangalore House Price Predictor
-            </span>
-          </Navbar.Link>
+        {/* Predictor Button (desktop only) */}
+        <button
+          type="button"
+          className="hidden lg:inline-block font-bold text-sm text-[#333] bg-[#FFD700] rounded-full px-4 py-1 transition-all duration-200 hover:bg-[#FF5722] hover:text-white focus:outline-none mr-2"
+          style={{
+            textTransform: 'capitalize',
+            letterSpacing: '0.01em',
+          }}
+          onClick={() => window.open('https://banglore-house-price-predictor.onrender.com/', '_blank')}
+        >
+          Bangalore House Price Predictor
+        </button>
 
-          {/* Theme Toggle Button */}
-          <Button
-            className="w-10 h-10 p-0 inline-flex items-center justify-center"
-            color="gray"
-            pill
-            onClick={() => dispatch(toggleTheme())}
-            title="Toggle Theme"
-            aria-label="Toggle Theme"
-          >
-            {theme === 'light' ? <FaSun /> : <FaMoon />}
-          </Button>
-        </div>
+        {/* Theme Toggle Button */}
+        <Button
+          className="w-10 h-10 p-0 flex items-center justify-center"
+          color="gray"
+          pill
+          onClick={() => dispatch(toggleTheme())}
+          title="Toggle Theme"
+          aria-label="Toggle Theme"
+        >
+          {theme === 'light' ? <FaSun /> : <FaMoon />}
+        </Button>
 
         {/* User Dropdown or Sign In */}
         {currentUser ? (
@@ -153,69 +131,58 @@ export default function Header() {
           </Dropdown>
         ) : (
           <Link to="/sign-in">
-            <li className="hover:underline list-none">Sign In</li>
+            <li className="hover:underline list-none font-medium">Sign In</li>
           </Link>
         )}
 
         <Navbar.Toggle />
       </div>
 
-      {/* Mobile Search Bar Overlay/Dropdown */}
+      {/* Mobile Search Overlay */}
       {showMobileSearch && (
-        <div className="absolute top-16 left-0 w-full px-4 py-2 bg-white dark:bg-gray-800 z-50 flex lg:hidden border-b">
-          <form onSubmit={handleSubmit} className="flex w-full gap-2">
-            <TextInput
-              type="text"
-              placeholder="Search..."
-              value={searchTerm}
-              rightIcon={FaSearch}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full"
-              autoFocus
-            />
-            <Button type="submit" color="gray" pill>
-              <FaSearch />
-            </Button>
-          </form>
+        <div className="fixed inset-0 bg-black bg-opacity-40 z-40 flex items-start justify-center lg:hidden">
+          <div className="bg-white dark:bg-gray-800 w-full px-4 py-4 shadow-md border-b flex items-center gap-2">
+            <form onSubmit={handleSubmit} className="flex w-full gap-2">
+              <TextInput
+                type="text"
+                placeholder="Search..."
+                value={searchTerm}
+                rightIcon={FaSearch}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full"
+                autoFocus
+              />
+              <Button type="submit" color="gray" pill>
+                <FaSearch />
+              </Button>
+              <Button
+                type="button"
+                color="gray"
+                pill
+                onClick={() => setShowMobileSearch(false)}
+                aria-label="Close search"
+              >
+                ✕
+              </Button>
+            </form>
+          </div>
         </div>
       )}
 
+      {/* Navbar Collapse (mobile menu) */}
       <Navbar.Collapse>
-        {/* Mobile: Show predictor button in collapse */}
-        <Navbar.Link
-          as={'div'}
-          className="lg:hidden"
+        {/* Predictor Button (mobile menu) */}
+        <button
+          type="button"
+          className="lg:hidden font-bold text-sm text-[#333] bg-[#FFD700] rounded-full px-4 py-1 transition-all duration-200 hover:bg-[#FF5722] hover:text-white focus:outline-none mb-2"
           style={{
-            display: 'inline-block',
-            fontSize: '14px',
-            fontWeight: 'bold',
-            textAlign: 'center',
-            color: '#333333',
-            backgroundColor: '#FFD700',
-            borderRadius: '50px',
-            padding: '2px 12px',
             textTransform: 'capitalize',
-            cursor: 'pointer',
-            transition: 'color 0.3s ease-in-out, transform 0.2s ease-in-out, background-color 0.3s ease-in-out',
-            marginBottom: '0.5rem',
+            letterSpacing: '0.01em',
           }}
           onClick={() => window.open('https://banglore-house-price-predictor.onrender.com/', '_blank')}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.color = '#FFFFFF';
-            e.currentTarget.style.backgroundColor = '#FF5722';
-            e.currentTarget.style.transform = 'scale(1.05)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.color = '#333333';
-            e.currentTarget.style.backgroundColor = '#FFD700';
-            e.currentTarget.style.transform = 'scale(1)';
-          }}
         >
-          <span style={{ color: 'inherit', textDecoration: 'none' }}>
-            Bangalore House Price Predictor
-          </span>
-        </Navbar.Link>
-
+          Bangalore House Price Predictor
+        </button>
         <Navbar.Link active={path === "/"} as={'div'}>
           <Link to="/">Home</Link>
         </Navbar.Link>
